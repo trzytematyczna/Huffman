@@ -35,7 +35,7 @@ public class HuffmanTest {
 //		for(HuffmanElement2 el : huff.list){
 //			System.out.println(el.getCharacter()+" "+el.getFrequency());
 //		}
-		doGenerateCode(huff.list.getFirst(), "");
+//		doGenerateCode(huff.list.getFirst(), "");
 //		huff.buildCode(huff.list.getFirst(), "");
 //		System.out.println("======");
 //		printCode(huff.list.getFirst());

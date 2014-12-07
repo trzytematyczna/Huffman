@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -20,13 +21,14 @@ public class Huffman {
 	public LinkedList<HuffmanElement2> list;
 	public LinkedList<HuffmanElement2> tree;
 	String[] codes;
-	Collection<> codes_bytes;
+	Pair[] codes_bytes;
 	HashMap<Character, Integer> hash;
 	int depth;
 	
 	public Huffman(String path) throws IOException {
+		this.depth=1;
 		list = new LinkedList<HuffmanElement2>();
-		tree = new LinkedList<HuffmanElement2>();
+//		tree = new LinkedList<HuffmanElement2>();
 		hash = new HashMap<Character, Integer>();
 		BufferedReader br = null;
 		br = new BufferedReader(new FileReader(path));
@@ -35,8 +37,6 @@ public class Huffman {
 		int i=0;
 		while ((r = br.read()) != -1) {
             ch = (char) r;
-//            System.out.println("Do something with " + ch);
-            
             if(modifyChar(ch)!=1){
             	list.add(new HuffmanElement2(ch, null, null));
             	hash.put(ch, i++);
@@ -49,7 +49,6 @@ public class Huffman {
 	 * result 0 = no character
 	 * result 1 = there's char, modified
 	 */
-
 	public int modifyChar(char ch){
 		int result = 0;
 		for(HuffmanElement2 tab : this.list){
@@ -60,12 +59,13 @@ public class Huffman {
 		}
 		return result;
 	}
+
 	public void doHuff() throws IOException{
 		String path = "C:\\Users\\moni\\Documents\\agh\\IXsem\\algo\\text_test.txt";
 		String out = "C:\\Users\\moni\\Documents\\agh\\IXsem\\algo\\wynik.txt";
-		codes_bytes = new Byte[8];
+		codes_bytes = new Pair[hash.size()];
 		makeHuffmanTree();
-		buildCode(this.list.getFirst(), (byte) 0);
+		buildCode(this.list.getFirst(), 0, 1);
 		codeToFile(path, out);
 	}
 	public void makeHuffmanTree(){
@@ -93,74 +93,85 @@ public class Huffman {
 //        	codes[hash.get(hfel.character)] = s;
 //        }
 //    }
-	private void buildCode(HuffmanElement2 hfel, byte x) {
-		
-		byte y = 1;
-		byte enlarged = (byte) (2 *(x&y)+(x^y));
-		y=0;
-		byte enlarged1 = (byte) (2 *(x&y)+(x^y));
+	private void buildCode(HuffmanElement2 hfel, int x, int size) {
+		int shifted = x<<1;
+		int added = (2 *(shifted&1)+(shifted^1));
+		size++;
         if (!hfel.isLeaf()) {
-            buildCode(hfel.left,  enlarged);
-            buildCode(hfel.right, enlarged);
+        	this.depth++;
+            buildCode(hfel.left,  shifted, size);
+            buildCode(hfel.right, added, size);
         }
         else {
 //            st[hfel.character] = s;
-        	codes_bytes[hash.get(hfel.character)] = x;
-        	System.out.println(hfel.character + " " + Integer.toBinaryString(x));
+        	codes_bytes[hash.get(hfel.character)] = new Pair(x,size);
+        	System.out.println(hfel.frequency+" "+hfel.character + " " + Integer.toBinaryString(x));
         }
     }
 	
 	public void codeToFile(String path, String out) throws IOException{
 		BufferedReader br = null;
 		br = new BufferedReader(new FileReader(path));
-		
 		File file = new File(out);
 		FileWriter fw = new FileWriter(file.getAbsoluteFile());
 		BufferedWriter bw = new BufferedWriter(fw);
-//		bw = new BufferedWriter(new FileWriter(out));
+		FileOutputStream fil = new FileOutputStream(out);
+        byte[] bs = new byte[32];
+		int pozycja = 0;
 		int r;
 		char ch;
 		while ((r = br.read()) != -1) {
             ch = (char) r;
-//            System.out.println("Do something with " + ch);
-//            list.get(ch);
-            Integer c = hash.get(ch);
-            int i;
-            Byte b =codes_bytes[hash.get(ch)];
+            Pair pair = codes_bytes[hash.get(ch)];
+            
+            //dopakuj do bufora
+            //jesli bufor pelny wyslij
+            if(!(pozycja<bs.length)){
+            	fil.write(bs);
+			}//jesli bufor niepelny nic
+            
+//            bw.write(pair.value);
+//            pair.len;
+//            System.out.println(pair.value);
 //            bw.write(b.byteValue());//+Integer.toBinaryString(b));
-            bw.write(Integer.toBinaryString(b));
+//            bw.write(Integer.toBinaryString(b));
             
 		}
 		br.close();
 		bw.close();
 	}
 	
-	public void decodeFromFile(String coded, String decoded) throws IOException{
-		BufferedReader br = null;
-		br = new BufferedReader(new FileReader(coded));
-		
-		File file = new File(decoded);
-		FileWriter fw = new FileWriter(file.getAbsoluteFile());
-		BufferedWriter bw = new BufferedWriter(fw);
-//		bw = new BufferedWriter(new FileWriter(out));
-		int r;
-		char ch;
-		while ((r = br.read()) != -1) {
-            ch = (char) r;
-//            System.out.println("Do something with " + ch);
-//            list.get(ch);
-            Integer c = hash.get(ch);
-            int i;
-            Byte b =codes_bytes[hash.get(ch)];
-            bw.write(Integer.toBinaryString(b));
-            
-		}
-		br.close();
-		bw.close();
-	}
+//	public void decodeFromFile(String coded, String decoded) throws IOException{
+//		BufferedReader br = null;
+//		br = new BufferedReader(new FileReader(coded));
+//		
+//		File file = new File(decoded);
+//		FileWriter fw = new FileWriter(file.getAbsoluteFile());
+//		BufferedWriter bw = new BufferedWriter(fw);
+////		bw = new BufferedWriter(new FileWriter(out));
+//		int r;
+//		char ch;
+//		while ((r = br.read()) != -1) {
+//            ch = (char) r;
+////            System.out.println("Do something with " + ch);
+////            list.get(ch);
+//            Integer c = hash.get(ch);
+//            int i;
+//            Byte b =codes_bytes[hash.get(ch)];
+//            bw.write(Integer.toBinaryString(b));
+//            
+//		}
+//		br.close();
+//		bw.close();
+//	}
 }
-class pair{
+class Pair{
 	int value;
 	int len;
+	
+	public Pair(int val, int len) {
+		this.value = val;
+		this.len = len;
+	}
 }
 
