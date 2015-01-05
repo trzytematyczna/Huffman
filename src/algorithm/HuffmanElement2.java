@@ -28,7 +28,7 @@ public class HuffmanElement2 implements Comparable<HuffmanElement2>{
 		this.right = right;
 	}
 	boolean isLeaf(){
-		return (left == null || right == null);
+		return (left == null && right == null);
 	}
 	public HuffmanElement2(String character) {
 		this.character = character;

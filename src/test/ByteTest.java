@@ -16,6 +16,7 @@ public class ByteTest {
         byte y = 1;
         System.out.println(Integer.toBinaryString(2 *(x&y)+(x^y)));
         System.out.println(Integer.SIZE);
+//        System.out.println(Byte.valueOf("7"));
 	int i = 0;
 	i++;
 	}

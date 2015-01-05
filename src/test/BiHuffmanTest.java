@@ -7,21 +7,22 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 
+import algorithm.BiHuffman;
 import algorithm.Huffman;
 import algorithm.HuffmanElement;
 import algorithm.HuffmanElement2;
 
-public class HuffmanTest {
+public class BiHuffmanTest {
 
 //	String path = "C:\\Users\\moni\\Documents\\agh\\IXsem\\algo\\text.txt";
-	String path = "C:\\Users\\MZ\\Documents\\mra\\agh\\algo\\tekst_short.txt";
-//	String path = "C:\\Users\\MZ\\Documents\\mra\\agh\\algo\\tekst_dlugi.txt";
+//	String path = "C:\\Users\\MZ\\Documents\\mra\\agh\\algo\\tekst_short.txt";
+	String path = "C:\\Users\\MZ\\Documents\\mra\\agh\\algo\\tekst_dlugi.txt";
 	String out = "C:\\Users\\MZ\\Documents\\mra\\agh\\algo\\wynik.txt";
-	Huffman huff;
+	BiHuffman huff;
 	
 	@Before
 	public void init() throws IOException {
-		huff = new Huffman(path);
+		huff = new BiHuffman(path);
 	}
 	
 	@Test
