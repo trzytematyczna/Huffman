@@ -15,32 +15,34 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class Huffman {
 
 	public LinkedList<HuffmanElement2> list;
-	public LinkedList<HuffmanElement2> tree;
 	String[] codes;
 	Pair[] codes_bytes;
-	Pair[] asd;
-	HashMap<Character, Integer> hash;
+	revPair[] rev_codes;
+	codes[] cds;
+	int last;
+	Map<String, Integer> hash_frequency;
 	int depth;
 	
 	public Huffman(String path) throws IOException {
-		this.depth=1;
+		this.depth=0;
 		list = new LinkedList<HuffmanElement2>();
-//		tree = new LinkedList<HuffmanElement2>();
-		hash = new HashMap<Character, Integer>();
+		hash_frequency = new HashMap<String, Integer>();
 		BufferedReader br = null;
 		br = new BufferedReader(new FileReader(path));
 		int r;
-		char ch;
+		String s;
 		int i=0;
 		while ((r = br.read()) != -1) {
-            ch = (char) r;
-            if(modifyChar(ch)!=1){
-            	list.add(new HuffmanElement2(ch, null, null));
-            	hash.put(ch, i++);
+            s = String.valueOf((char)r);
+            if(modifyChar(s)!=1){
+            	list.add(new HuffmanElement2(s, null, null));
+            	hash_frequency.put(s, i++);
             }
         }
 		Collections.sort(list);
@@ -50,10 +52,10 @@ public class Huffman {
 	 * result 0 = no character
 	 * result 1 = there's char, modified
 	 */
-	public int modifyChar(char ch){
+	public int modifyChar(String ch){
 		int result = 0;
 		for(HuffmanElement2 tab : this.list){
-			if(tab.character == ch){
+			if(tab.character.equals(ch)){
 				tab.addFrequency();
 				result = 1;
 			}
@@ -62,11 +64,15 @@ public class Huffman {
 	}
 
 	public void doHuff(String path, String out) throws IOException{
-		codes_bytes = new Pair[hash.size()];
-		asd = new Pair[hash.size()];
+		cds = new codes[hash_frequency.size()];
+		codes_bytes = new Pair[hash_frequency.size()];
 		makeHuffmanTree();
-		buildCode(this.list.getFirst(), 0, 1);
+//		System.out.println(this.list.getFirst().frequency);
+		buildCode(this.list.getFirst(), "", 1);
+		rev_codes = new revPair[this.last];
+		revCode();
 		codeToFile(path, out);
+		decodeFromFile(out);
 	}
 	public void makeHuffmanTree(){
 		while(list.size()>1){
@@ -80,39 +86,63 @@ public class Huffman {
 		}
 	}
 	
-//	public void buildCode(HuffmanElement2 hfel, String s) {
-//		this.codes = new String[hash.size()];
-////		(2 *(x&y)+(x^y));
+//	private void buildCode(HuffmanElement2 hfel, int x, int size) {
+//		int shifted = x<<1;
+//		int added = (2 *(shifted&1)+(shifted^1));
 //        if (!hfel.isLeaf()) {
-//            buildCode(hfel.left,  s + '0');
-//            buildCode(hfel.right, s + '1');
+//    		size++;
+//        	this.depth++;
+//            buildCode(hfel.left,  shifted, size);
+//            buildCode(hfel.right, added, size);
 //        }
 //        else {
-////            st[hfel.character] = s;
-////        	hfel.code = s;
-//        	codes[hash.get(hfel.character)] = s;
+////        	System.out.println(hash_frequency.get(hfel.character));
+//        	codes_bytes[hash_frequency.get(hfel.character)] = new Pair(x,Integer.toBinaryString(x).length());
+//        	
+//        	System.out.println(hfel.frequency+" "+hfel.character + " " + Integer.toBinaryString(x)+" "+Integer.toBinaryString(x).length()+" "+
+//        	codes_bytes[hash_frequency.get(hfel.character)].value +" "+codes_bytes[hash_frequency.get(hfel.character)].len);
+////        	System.out.println(size+" "+ this.depth);
+//        	this.last = codes_bytes[hash_frequency.get(hfel.character)].value+1;
 //        }
 //    }
-	private void buildCode(HuffmanElement2 hfel, int x, int size) {
-		int shifted = x<<1;
-		int added = (2 *(shifted&1)+(shifted^1));
+	private void buildCode(HuffmanElement2 hfel, String x, int size) {
+//		int shifted = x<<1;
+//		int added = (2 *(shifted&1)+(shifted^1));
         if (!hfel.isLeaf()) {
     		size++;
-        	this.depth++;
-            buildCode(hfel.left,  shifted, size);
-            buildCode(hfel.right, added, size);
+//        	this.depth++;
+            buildCode(hfel.left,  x +"0", size);
+            buildCode(hfel.right, x +"1", size);
         }
         else {
-//            st[hfel.character] = s;
-        	codes_bytes[hash.get(hfel.character)] = new Pair(x,size);
-//        	codes_bytes[hash.get(hfel.character)] = hfel.character;//new Pair(x,size);
-//        	asd[x] = new Pair(x, size);
-        	System.out.println(hfel.frequency+" "+hfel.character + " " + Integer.toBinaryString(x)+" "+Integer.toBinaryString(x).length()+" "+
-        	codes_bytes[hash.get(hfel.character)].value +" "+codes_bytes[hash.get(hfel.character)].len);
+//        	System.out.println(hash_frequency.get(hfel.character));
+        	codes_bytes[hash_frequency.get(hfel.character)] = new Pair(x,0);//Integer.toBinaryString(x).length());
+        	cds[this.depth++] = new codes(hfel.character,x);
+        	System.out.println(x+hfel.character);
+        	System.out.println(hfel.frequency+" "+hfel.character + " "+
+			        	codes_bytes[hash_frequency.get(hfel.character)].value +" "+ 
+			        	Integer.parseInt(codes_bytes[hash_frequency.get(hfel.character)].value,2));
 //        	System.out.println(size+" "+ this.depth);
+        	this.last = Integer.parseInt(codes_bytes[hash_frequency.get(hfel.character)].value)+1;
         }
     }
+	private void revCode(){
+		Iterator<Entry<String, Integer>> it = hash_frequency.entrySet().iterator();
+		while(it.hasNext()){
+			Map.Entry<String, Integer> entry = it.next();
+			rev_codes[Integer.parseInt(codes_bytes[entry.getValue()].value,2)] = new revPair(entry.getKey(), 0);
+			System.out.println("Key = " + entry.getKey() + ", Value = " + Integer.parseInt(codes_bytes[entry.getValue()].value,2));
+		}
+	}
 	
+	private String findAlph(String z){
+		System.out.println(z);
+		for(int i=0; i<cds.length; i++){
+			System.out.println(cds[i].zerone);
+			if(cds[i].zerone.equals(z)) return cds[i].charact;
+		}
+		return null;
+	}
 	public void codeToFile(String path, String out) throws IOException{
 		BufferedReader br = null;
 		br = new BufferedReader(new FileReader(path));
@@ -122,20 +152,17 @@ public class Huffman {
 		}
 		FileWriter fw = new FileWriter(file.getAbsoluteFile());
 		BufferedWriter bw = new BufferedWriter(fw);
-//		FileOutputStream fil = new FileOutputStream(out);
-        byte[] bs = new byte[32];
-		int pozycja = 0;
 		int r;
-		char ch;
+		String s = "";
 		String zero = "";
 		String tekst  ="";
 		while ((r = br.read()) != -1) {
-            ch = (char) r;
-			tekst += ch;
-            Pair pair = codes_bytes[hash.get(ch)];
+            s = String.valueOf((char)r);
+			tekst += s;
+//            Pair pair = codes_bytes[hash_frequency.get(ch)];
 
-            bw.write(Integer.toBinaryString(codes_bytes[hash.get(ch)].value));
-            zero +=Integer.toBinaryString(codes_bytes[hash.get(ch)].value);
+            bw.write(codes_bytes[hash_frequency.get(s)].value);
+            zero +=codes_bytes[hash_frequency.get(s)].value;
             
             //dopakuj do bufora
             //jesli bufor pelny wyslij
@@ -151,10 +178,10 @@ public class Huffman {
             
 		}
 //        System.out.println("tekst:\n"+zero+"\n"+tekst);
-        System.out.println((tekst.length()*8));
-        System.out.println((zero.length()));
-        System.out.println((double)(zero.length())/(tekst.length()*8));
-        System.out.println((double)(tekst.length()*8)/(zero.length()));
+//        System.out.println((tekst.length()*8));
+//        System.out.println((zero.length()));
+//        System.out.println((double)(zero.length())/(tekst.length()*8));
+//        System.out.println((double)(tekst.length()*8)/(zero.length()));
 
 		br.close();
 		bw.close();
@@ -175,48 +202,54 @@ public class Huffman {
 		while ((r = br.read()) != -1) {
             ch = (char) r;
             s += ch;
-            
-//            if(asd[Integer.valueOf(s)]){	
-            	s = "";
+//            if(rev_codes[])
+//            if(rev_codes[Integer.parseInt(s, 2)]!=null){
+//            	System.out.println(s);
+//                System.out.println("asd "+Integer.parseInt(s, 2));
+//            	bw.write(rev_codes[Integer.parseInt(s, 2)].value);
+//            	s = "";
 //            }
-            Pair pair = codes_bytes[hash.get(ch)];
+            System.out.println("====");
+            String found = findAlph(s);
+            if(found!=null){
+            	System.out.println(s);
+            	bw.write(found);
+            	s="";
+            }
 
-            bw.write(Integer.toBinaryString(codes_bytes[hash.get(ch)].value));
+//            bw.write(Integer.toBinaryString(codes_bytes[hash_frequency.get(ch)].value));
 		}
 		br.close();
 		bw.close();
 	}
-//	public void decodeFromFile(String coded, String decoded) throws IOException{
-//		BufferedReader br = null;
-//		br = new BufferedReader(new FileReader(coded));
-//		
-//		File file = new File(decoded);
-//		FileWriter fw = new FileWriter(file.getAbsoluteFile());
-//		BufferedWriter bw = new BufferedWriter(fw);
-////		bw = new BufferedWriter(new FileWriter(out));
-//		int r;
-//		char ch;
-//		while ((r = br.read()) != -1) {
-//            ch = (char) r;
-////            System.out.println("Do something with " + ch);
-////            list.get(ch);
-//            Integer c = hash.get(ch);
-//            int i;
-//            Byte b =codes_bytes[hash.get(ch)];
-//            bw.write(Integer.toBinaryString(b));
-//            
-//		}
-//		br.close();
-//		bw.close();
-//	}
 }
+
 class Pair{
-	int value;
+	String value;
 	int len;
 	
-	public Pair(int val, int len) {
+	public Pair(String s, int len) {
+		this.value = s;
+		this.len = len;
+	}
+}
+class revPair{
+	String value;
+	int len;
+	
+	public revPair(String val, int len) {
 		this.value = val;
 		this.len = len;
 	}
 }
 
+class codes{
+	String charact;
+	String zerone;
+	
+	public codes(String c, String z) {
+		this.charact = c;
+		this.zerone = z;
+	}
+	
+}

@@ -3,19 +3,19 @@ package algorithm;
 import java.util.LinkedList;
 
 public class HuffmanElement2 implements Comparable<HuffmanElement2>{
-	char character;
+	String character;
 	int frequency;
 	String code; 
 	public HuffmanElement2 left, right;
 	
 //	LinkedList<HuffmanElement2> children;
-	public HuffmanElement2(char character, HuffmanElement2 right, HuffmanElement2 left) {
+	public HuffmanElement2(String character, HuffmanElement2 right, HuffmanElement2 left) {
 		this.character = character;
 		this.frequency = 1;
 		this.left = left;
 		this.right = right;
 	}
-	public HuffmanElement2(char character, int freq, HuffmanElement2 right, HuffmanElement2 left) {
+	public HuffmanElement2(String character, int freq, HuffmanElement2 right, HuffmanElement2 left) {
 		this.character = character;
 		this.frequency = freq;
 		this.left = left;
@@ -30,17 +30,17 @@ public class HuffmanElement2 implements Comparable<HuffmanElement2>{
 	boolean isLeaf(){
 		return (left == null || right == null);
 	}
-	public HuffmanElement2(char character) {
+	public HuffmanElement2(String character) {
 		this.character = character;
 		this.frequency = 1;
 	}
-	public HuffmanElement2(char character, String code) {
+	public HuffmanElement2(String character, String code) {
 		this.character = character;
 		this.frequency = 1;
 		this.code = code;
 	}
 	public HuffmanElement2(int freq) {
-		this.character = (Character) null;
+		this.character = (String) null;
 		this.code = null;
 		this.frequency = freq;
 	}
@@ -52,11 +52,11 @@ public class HuffmanElement2 implements Comparable<HuffmanElement2>{
 		this.code = code;
 	}
 
-	public char getCharacter() {
+	public String getCharacter() {
 		return character;
 	}
 
-	public void setCharacter(char character) {
+	public void setCharacter(String character) {
 		this.character = character;
 	}
 
