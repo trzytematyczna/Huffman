@@ -21,12 +21,11 @@ import java.util.Map.Entry;
 public class Huffman {
 
 	public LinkedList<HuffmanElement2> list;
-	String[] codes;
 	Pair[] codes_bytes;
-	revPair[] rev_codes;
 	codes[] cds;
 	int last;
 	Map<String, Integer> hash_frequency;
+	LinkedList<codes> list_codes;
 	int depth;
 	
 	public Huffman(String path) throws IOException {
@@ -66,11 +65,10 @@ public class Huffman {
 	public void doHuff(String path, String out) throws IOException{
 		cds = new codes[hash_frequency.size()];
 		codes_bytes = new Pair[hash_frequency.size()];
+		list_codes = new LinkedList<codes>();
 		makeHuffmanTree();
-//		System.out.println(this.list.getFirst().frequency);
-		buildCode(this.list.getFirst(), "", 1);
-		rev_codes = new revPair[this.last];
-		revCode();
+		buildCode(this.list.getFirst(), "");
+		Collections.sort(this.list_codes);
 		codeToFile(path, out);
 		decodeFromFile(out);
 	}
@@ -105,41 +103,40 @@ public class Huffman {
 //        	this.last = codes_bytes[hash_frequency.get(hfel.character)].value+1;
 //        }
 //    }
-	private void buildCode(HuffmanElement2 hfel, String x, int size) {
-//		int shifted = x<<1;
-//		int added = (2 *(shifted&1)+(shifted^1));
+	private void buildCode(HuffmanElement2 hfel, String x) {
         if (!hfel.isLeaf()) {
-    		size++;
-//        	this.depth++;
-            buildCode(hfel.left,  x +"0", size);
-            buildCode(hfel.right, x +"1", size);
+            buildCode(hfel.left,  x +"0");
+            buildCode(hfel.right, x +"1");
         }
         else {
-//        	System.out.println(hash_frequency.get(hfel.character));
-        	codes_bytes[hash_frequency.get(hfel.character)] = new Pair(x,0);//Integer.toBinaryString(x).length());
+        	codes_bytes[hash_frequency.get(hfel.character)] = new Pair(x,x.length());
         	cds[this.depth++] = new codes(hfel.character,x);
-        	System.out.println(x+hfel.character);
-        	System.out.println(hfel.frequency+" "+hfel.character + " "+
+        	list_codes.add(new codes(hfel.character,x));
+        	System.out.println(hfel.frequency+" "+hfel.character + " "+x.length()+"asd "+
 			        	codes_bytes[hash_frequency.get(hfel.character)].value +" "+ 
 			        	Integer.parseInt(codes_bytes[hash_frequency.get(hfel.character)].value,2));
-//        	System.out.println(size+" "+ this.depth);
-        	this.last = Integer.parseInt(codes_bytes[hash_frequency.get(hfel.character)].value)+1;
         }
     }
-	private void revCode(){
-		Iterator<Entry<String, Integer>> it = hash_frequency.entrySet().iterator();
-		while(it.hasNext()){
-			Map.Entry<String, Integer> entry = it.next();
-			rev_codes[Integer.parseInt(codes_bytes[entry.getValue()].value,2)] = new revPair(entry.getKey(), 0);
-			System.out.println("Key = " + entry.getKey() + ", Value = " + Integer.parseInt(codes_bytes[entry.getValue()].value,2));
-		}
-	}
+//	private void revCode(){
+//		Iterator<Entry<String, Integer>> it = hash_frequency.entrySet().iterator();
+//		while(it.hasNext()){
+//			Map.Entry<String, Integer> entry = it.next();
+//			rev_codes[Integer.parseInt(codes_bytes[entry.getValue()].value,2)] = new revPair(entry.getKey(), 0);
+//			System.out.println("Key = " + entry.getKey() + ", Value = " + Integer.parseInt(codes_bytes[entry.getValue()].value,2));
+//		}
+//	}
 	
+//	private String findAlph(String z){
+//		for(int i=0; i<cds.length; i++){
+//			if(cds[i].zerone.equals(z)) return cds[i].charact;
+////			if(cds[i].zerone.length()>z.length()) return null;
+//		}
+//		return null;
+//	}
 	private String findAlph(String z){
-		System.out.println(z);
-		for(int i=0; i<cds.length; i++){
-			System.out.println(cds[i].zerone);
-			if(cds[i].zerone.equals(z)) return cds[i].charact;
+		for(codes cod : list_codes){
+			if(cod.zerone.equals(z)) return cod.charact;
+			if(cod.zerone.length()>z.length()) return null;
 		}
 		return null;
 	}
@@ -159,7 +156,6 @@ public class Huffman {
 		while ((r = br.read()) != -1) {
             s = String.valueOf((char)r);
 			tekst += s;
-//            Pair pair = codes_bytes[hash_frequency.get(ch)];
 
             bw.write(codes_bytes[hash_frequency.get(s)].value);
             zero +=codes_bytes[hash_frequency.get(s)].value;
@@ -177,11 +173,10 @@ public class Huffman {
 //            bw.write(Integer.toBinaryString(b));
             
 		}
-//        System.out.println("tekst:\n"+zero+"\n"+tekst);
-//        System.out.println((tekst.length()*8));
-//        System.out.println((zero.length()));
-//        System.out.println((double)(zero.length())/(tekst.length()*8));
-//        System.out.println((double)(tekst.length()*8)/(zero.length()));
+        System.out.println((tekst.length()*8));
+        System.out.println((zero.length()));
+        System.out.println((double)(zero.length())/(tekst.length()*8));
+        System.out.println((double)(tekst.length()*8)/(zero.length()));
 
 		br.close();
 		bw.close();
@@ -209,10 +204,9 @@ public class Huffman {
 //            	bw.write(rev_codes[Integer.parseInt(s, 2)].value);
 //            	s = "";
 //            }
-            System.out.println("====");
             String found = findAlph(s);
             if(found!=null){
-            	System.out.println(s);
+//            	System.out.println(s);
             	bw.write(found);
             	s="";
             }
@@ -233,17 +227,8 @@ class Pair{
 		this.len = len;
 	}
 }
-class revPair{
-	String value;
-	int len;
-	
-	public revPair(String val, int len) {
-		this.value = val;
-		this.len = len;
-	}
-}
 
-class codes{
+class codes implements Comparable<codes>{
 	String charact;
 	String zerone;
 	
@@ -251,5 +236,20 @@ class codes{
 		this.charact = c;
 		this.zerone = z;
 	}
+
+	@Override
+	public int compareTo(codes cd) {
+		int compared = cd.zerone.length();
+		if (this.zerone.length() > compared){
+			return 1;
+		}
+		else if (this.zerone.length() == compared){
+			return 0;
+		}
+		else{
+			return -1;
+		}
+	}
+
 	
 }

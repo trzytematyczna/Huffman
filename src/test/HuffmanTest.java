@@ -14,8 +14,8 @@ import algorithm.HuffmanElement2;
 public class HuffmanTest {
 
 //	String path = "C:\\Users\\moni\\Documents\\agh\\IXsem\\algo\\text.txt";
-	String path = "C:\\Users\\MZ\\Documents\\mra\\agh\\algo\\tekst_short.txt";
-//	String path = "C:\\Users\\MZ\\Documents\\mra\\agh\\algo\\tekst_dlugi.txt";
+//	String path = "C:\\Users\\MZ\\Documents\\mra\\agh\\algo\\tekst_short.txt";
+	String path = "C:\\Users\\MZ\\Documents\\mra\\agh\\algo\\tekst_dlugi.txt";
 	String out = "C:\\Users\\MZ\\Documents\\mra\\agh\\algo\\wynik.txt";
 	Huffman huff;
 	
