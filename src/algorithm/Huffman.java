@@ -42,8 +42,8 @@ public class Huffman {
 	
 	public Huffman(String path) throws IOException {
 //		decoded = new BufferedOutputStream(new FileOutputStream("C:\\Users\\MZ\\Documents\\mra\\agh\\algo\\decoded2.txt"));
-		out = new BufferedOutputStream(new FileOutputStream("C:\\Users\\MZ\\Documents\\mra\\agh\\algo\\binary_coded.txt"));
-		in = new BufferedInputStream(new FileInputStream("C:\\Users\\MZ\\Documents\\mra\\agh\\algo\\binary_coded.txt"));
+		out = new BufferedOutputStream(new FileOutputStream("C:\\Users\\MZ\\Documents\\mra\\agh\\algo\\Huffman_binary_coded.txt"));
+		in = new BufferedInputStream(new FileInputStream("C:\\Users\\MZ\\Documents\\mra\\agh\\algo\\Huffman_binary_coded.txt"));
 		this.depth=0;
 		list = new LinkedList<HuffmanElement2>();
 		hash_frequency = new HashMap<String, Integer>();
@@ -177,11 +177,12 @@ public class Huffman {
 		codelen = zero.length();
 //		BinaryStdOut outf = new BinaryStdOut();
 		writeBin(text_coded);
+		int len_coded = (zero.length()/8)+1;
         System.out.println("Text to code (len): "+(tekst.length()));
-        System.out.println("Coded text (len): "+(zero.length()/8));
+        System.out.println("Coded text (len): "+(len_coded));
 //        System.out.println("File (len): "+(double)(toCode.length()/ 1024));
 //        System.out.println("Binary file (len): "+(double)in.length());
-        System.out.println("Ratio (toCode/coded): "+(double)(tekst.length())/(zero.length()/8));
+        System.out.println("Ratio (toCode/coded): "+(double)(tekst.length())/(len_coded));
 
 		br.close();
 		bw.close();
@@ -235,7 +236,7 @@ public class Huffman {
 	
 	public static void decode(HuffmanElement2 root) throws IOException{
 //		remaining_bits = 0;
-		File file = new File("C:\\Users\\MZ\\Documents\\mra\\agh\\algo\\binary_decoded.txt");
+		File file = new File("C:\\Users\\MZ\\Documents\\mra\\agh\\algo\\Huffman_binary_decoded.txt");
         boolean bit = readBoolean(in);
 		 for (int i = 0; i < codelen; i++) {
 			 	HuffmanElement2 x = root;
@@ -305,7 +306,6 @@ public class Huffman {
 	public void decodeFromFile(String coded) throws IOException{
 		BufferedReader br = null;
 		br = new BufferedReader(new FileReader(coded));
-		String[] text_coded = new String[this.textlen];
 		File file = new File("C:\\Users\\MZ\\Documents\\mra\\agh\\algo\\Huffman_decoded.txt");
 		if (!file.exists()) {
 			file.createNewFile();
@@ -330,9 +330,10 @@ public class Huffman {
                 s="";
             }
 		}
+		int len_coded = (zero.length()/8)+1;
         System.out.println("Text coded (len): "+(zero.length()/8));
-        System.out.println("Text decoded (len): "+(tekst.length()));
-        System.out.println("Ratio (decoded/coded): "+(double)(tekst.length())/(zero.length()/8));
+        System.out.println("Text decoded (len): "+(len_coded));
+        System.out.println("Ratio (decoded/coded): "+(double)(tekst.length())/(len_coded));
 		br.close();
 		bw.close();
 	}

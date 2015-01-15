@@ -1,9 +1,12 @@
 package algorithm;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -23,12 +26,23 @@ public class BiHuffman {
 
 	public LinkedList<HuffmanElement2> list;
 	Pair[] codes_bytes;
+	int textlen;
+	static int codelen;
 //	codes[] cds;
+	HuffmanElement2 root;
 	Map<String, Integer> hash_frequency;
 	LinkedList<codes> list_codes;
 	int depth;
+   	private static int buff;
+   	private static int buff2;
+	private static int occupied_bits;
+	private static int remaining_bits;
+	static BufferedOutputStream out;
+	static BufferedInputStream in; 
 	
 	public BiHuffman(String path) throws IOException {
+		out = new BufferedOutputStream(new FileOutputStream("C:\\Users\\MZ\\Documents\\mra\\agh\\algo\\BiHuffman_binary_coded.txt"));
+		in = new BufferedInputStream(new FileInputStream("C:\\Users\\MZ\\Documents\\mra\\agh\\algo\\BiHuffman_binary_coded.txt"));
 		this.depth=0;
 		list = new LinkedList<HuffmanElement2>();
 		hash_frequency = new HashMap<String, Integer>();
@@ -38,6 +52,7 @@ public class BiHuffman {
 		String s;
 		int i=0;
 		while ((r = br.read()) != -1) {
+			this.textlen++;
             s = String.valueOf((char)r);
             if((r = br.read()) != -1){
                 s += String.valueOf((char)r);
@@ -76,10 +91,12 @@ public class BiHuffman {
 		codes_bytes = new Pair[hash_frequency.size()];
 		list_codes = new LinkedList<codes>();
 		makeHuffmanTree();
-		buildCode(this.list.getFirst(), "");
+		this.root= this.list.getFirst();
+		buildCode(this.root, "");
 		Collections.sort(this.list_codes);
 		codeToFile(path, out);
 		decodeFromFile(out);
+		decode(this.root);
 	}
 	public void makeHuffmanTree(){
 		while(list.size()>1){
@@ -154,6 +171,7 @@ public class BiHuffman {
 		String s = "";
 		String zero = "";
 		String tekst  ="";
+		String[] text_coded = new String[this.textlen];
 		while ((r = br.read()) != -1) {
             s = String.valueOf((char)r);
             if((r = br.read()) != -1){
@@ -170,9 +188,14 @@ public class BiHuffman {
 
             zero +=codes_bytes[hash_frequency.get(s)].value;
 		}
-        System.out.println("Text to code (len): "+(tekst.length()*8));
-        System.out.println("Coded text (len): "+(zero.length()));
-        System.out.println("Ratio (toCode/coded): "+(double)(tekst.length()*8)/(zero.length()));
+		text_coded=zero.split("(?!^)");
+		codelen = zero.length();
+//		BinaryStdOut outf = new BinaryStdOut();
+		writeBin(text_coded);
+		int len_coded=(zero.length()/8)+1;
+        System.out.println("Text to code (len): "+(tekst.length()));
+        System.out.println("Coded text (len): "+len_coded);
+        System.out.println("Ratio (toCode/coded): "+(double)(tekst.length())/len_coded);
 
 		br.close();
 		bw.close();
@@ -205,11 +228,118 @@ public class BiHuffman {
                 s="";
             }
 		}
-        System.out.println("Text decoded (len): "+(tekst.length()*8));
-        System.out.println("Text coded (len): "+(zero.length()));
-        System.out.println("Ratio (decoded/coded): "+(double)(tekst.length()*8)/(zero.length()));
+		int len_coded=(zero.length()/8)+1;
+        System.out.println("Text decoded (len): "+(tekst.length()));
+        System.out.println("Text coded (len): "+len_coded);
+        System.out.println("Ratio (decoded/coded): "+(double)(tekst.length())/len_coded);
 		br.close();
 		bw.close();
 	}
+	
+	private void writeBin(String[] text_coded) {
+		 for (int j = 0; j < text_coded.length; j++) {
+            if (text_coded[j].equals("0")) {
+               writeBit(false);
+            }
+            else if (text_coded[j].equals("1")) {
+           	writeBit(true);
+            }
+        }
+		 close(out);
+	}
+
+	private static void close(BufferedOutputStream out) {
+		flush(out);
+       try { out.close(); }
+       catch (IOException e) { e.printStackTrace(); }		
+	}
+
+	private static void flush(BufferedOutputStream out) {
+		sendBuffer(out);
+       try { out.flush(); }
+       catch (IOException e) { e.printStackTrace(); }		
+	}
+
+	private static void writeBit(boolean b) {
+		buff <<=1;
+		if(b == true){
+			buff |=1;
+		}
+		occupied_bits++;
+		if(occupied_bits == 8) sendBuffer(out);		
+	}
+
+	private static void sendBuffer(BufferedOutputStream out) {
+		if (occupied_bits == 0) return;
+       if (occupied_bits > 0) buff <<= (8 - occupied_bits);
+       try { 
+       	out.write(buff); 
+//       	System.out.println(Integer.toBinaryString(buff));
+       } catch (IOException e) { 
+       	e.printStackTrace(); 
+       }
+       occupied_bits = 0;
+       buff = 0;
+	}
+	
+	public static void decode(HuffmanElement2 root) throws IOException{
+//		remaining_bits = 0;
+		File file = new File("C:\\Users\\MZ\\Documents\\mra\\agh\\algo\\BiHuffman_binary_decoded.txt");
+        boolean bit = readBoolean(in);
+		 for (int i = 0; i < codelen; i++) {
+			 	HuffmanElement2 x = root;
+	            while (!x.isLeaf()) {
+	                try{
+	                	bit = readBoolean(in);
+	                }
+	                catch(RuntimeException e) {
+//	                    System.out.println("File (len): "+(double)file.length());
+	                	return;
+	                }
+//	                System.out.println("bit: "+Boolean.toString(bit));
+	                if (bit) x = x.right;
+	                else     x = x.left;
+	            }
+//	            System.out.println("x: "+x.character + " " +x.code);
+	            writeDecoded(x.character,file);
+	        }
+//	        close(decoded);	
+	}
+
+	private static void writeDecoded(String character, File file) throws IOException {
+		BufferedReader br = null;
+		if (!file.exists()) {
+			file.createNewFile();
+		}
+		FileWriter fw = new FileWriter(file.getAbsoluteFile(), true);
+		BufferedWriter bw = new BufferedWriter(fw);
+       	bw.write(character);
+       	bw.close();
+
+	}
+	private static boolean readBoolean(BufferedInputStream in) throws RuntimeException{
+		if (isEmpty()) throw new RuntimeException("Reading from empty input stream");
+        remaining_bits--;
+//		System.out.println(remaining_bits);
+        if (remaining_bits < 0) fillBuffer(in);
+        boolean bit = ((buff2 >> remaining_bits) & 1) == 1;
+        if (remaining_bits == 0) fillBuffer(in);
+        return bit;
+	}
+	
+	private static void fillBuffer(BufferedInputStream in) {
+		try { 
+			buff2 = in.read(); 
+			remaining_bits = 8; 
+//			System.out.print(buff2);
+        }
+		catch (IOException e) { 
+//        	System.out.println("EOF"); buff2 = -1; remaining_bits = -1; 
+        	}
+    }
+
+	public static boolean isEmpty() {
+        return buff2 == -1;
+    }
 }
 
