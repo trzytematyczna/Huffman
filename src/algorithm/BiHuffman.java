@@ -121,9 +121,9 @@ public class BiHuffman {
         	codes_bytes[hash_frequency.get(hfel.character)] = new Pair(x,x.length());
 //        	cds[this.depth++] = new codes(hfel.character,x);
         	list_codes.add(new codes(hfel.character,x));
-        	System.out.println(hfel.frequency+" "+hfel.character + " "+x.length()+"asd "+
-			        	codes_bytes[hash_frequency.get(hfel.character)].value +" "+ 
-			        	Integer.parseInt(codes_bytes[hash_frequency.get(hfel.character)].value,2));
+//        	System.out.println(hfel.frequency+" "+hfel.character + " "+x.length()+"asd "+
+//			        	codes_bytes[hash_frequency.get(hfel.character)].value +" "+ 
+//			        	Integer.parseInt(codes_bytes[hash_frequency.get(hfel.character)].value,2));
         }
     }
 //	private String findAlph(String z){
@@ -158,7 +158,7 @@ public class BiHuffman {
             s = String.valueOf((char)r);
             if((r = br.read()) != -1){
                 s += String.valueOf((char)r);
-                System.out.println(Byte.valueOf(codes_bytes[hash_frequency.get(s)].value));
+//                System.out.println(Byte.valueOf(codes_bytes[hash_frequency.get(s)].value));
 //                bOutput.write(codes_bytes[hash_frequency.get(s)].value);
                 bw.write(codes_bytes[hash_frequency.get(s)].value);
             	
@@ -170,18 +170,18 @@ public class BiHuffman {
 
             zero +=codes_bytes[hash_frequency.get(s)].value;
 		}
-        System.out.println((tekst.length()*8));
-        System.out.println((zero.length()));
-        System.out.println((double)(tekst.length()*8)/(zero.length()));
+        System.out.println("Text to code (len): "+(tekst.length()*8));
+        System.out.println("Coded text (len): "+(zero.length()));
+        System.out.println("Ratio (toCode/coded): "+(double)(tekst.length()*8)/(zero.length()));
 
 		br.close();
 		bw.close();
 	}
 	
-	public void decodeFromFile(String out) throws IOException{
+	public void decodeFromFile(String coded) throws IOException{
 		BufferedReader br = null;
-		br = new BufferedReader(new FileReader(out));
-		File file = new File("C:\\Users\\MZ\\Documents\\mra\\agh\\algo\\decode.txt");
+		br = new BufferedReader(new FileReader(coded));
+		File file = new File("C:\\Users\\MZ\\Documents\\mra\\agh\\algo\\BiHuffman_decoded.txt");
 		if (!file.exists()) {
 			file.createNewFile();
 		}
@@ -205,46 +205,11 @@ public class BiHuffman {
                 s="";
             }
 		}
-        System.out.println((tekst.length()*8));
-        System.out.println((zero.length()));
-        System.out.println((double)(tekst.length()*8)/(zero.length()));
+        System.out.println("Text decoded (len): "+(tekst.length()*8));
+        System.out.println("Text coded (len): "+(zero.length()));
+        System.out.println("Ratio (decoded/coded): "+(double)(tekst.length()*8)/(zero.length()));
 		br.close();
 		bw.close();
 	}
 }
 
-//class Pair{
-//	String value;
-//	int len;
-//	
-//	public Pair(String s, int len) {
-//		this.value = s;
-//		this.len = len;
-//	}
-//}
-//
-//class codes implements Comparable<codes>{
-//	String charact;
-//	String zerone;
-//	
-//	public codes(String c, String z) {
-//		this.charact = c;
-//		this.zerone = z;
-//	}
-//
-//	@Override
-//	public int compareTo(codes cd) {
-//		int compared = cd.zerone.length();
-//		if (this.zerone.length() > compared){
-//			return 1;
-//		}
-//		else if (this.zerone.length() == compared){
-//			return 0;
-//		}
-//		else{
-//			return -1;
-//		}
-//	}
-//
-	
-//}

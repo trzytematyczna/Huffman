@@ -17,7 +17,7 @@ public class BiHuffmanTest {
 //	String path = "C:\\Users\\moni\\Documents\\agh\\IXsem\\algo\\text.txt";
 //	String path = "C:\\Users\\MZ\\Documents\\mra\\agh\\algo\\tekst_short.txt";
 	String path = "C:\\Users\\MZ\\Documents\\mra\\agh\\algo\\tekst_dlugi.txt";
-	String out = "C:\\Users\\MZ\\Documents\\mra\\agh\\algo\\wynik.txt";
+	String out = "C:\\Users\\MZ\\Documents\\mra\\agh\\algo\\BiHuffman_coded.txt";
 	BiHuffman huff;
 	
 	@Before
