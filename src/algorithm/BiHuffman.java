@@ -28,7 +28,6 @@ public class BiHuffman {
 	Pair[] codes_bytes;
 	int textlen;
 	static int codelen;
-//	codes[] cds;
 	HuffmanElement2 root;
 	Map<String, Integer> hash_frequency;
 	LinkedList<codes> list_codes;
@@ -110,25 +109,6 @@ public class BiHuffman {
 		}
 	}
 	
-//	private void buildCode(HuffmanElement2 hfel, int x, int size) {
-//		int shifted = x<<1;
-//		int added = (2 *(shifted&1)+(shifted^1));
-//        if (!hfel.isLeaf()) {
-//    		size++;
-//        	this.depth++;
-//            buildCode(hfel.left,  shifted, size);
-//            buildCode(hfel.right, added, size);
-//        }
-//        else {
-////        	System.out.println(hash_frequency.get(hfel.character));
-//        	codes_bytes[hash_frequency.get(hfel.character)] = new Pair(x,Integer.toBinaryString(x).length());
-//        	
-//        	System.out.println(hfel.frequency+" "+hfel.character + " " + Integer.toBinaryString(x)+" "+Integer.toBinaryString(x).length()+" "+
-//        	codes_bytes[hash_frequency.get(hfel.character)].value +" "+codes_bytes[hash_frequency.get(hfel.character)].len);
-////        	System.out.println(size+" "+ this.depth);
-//        	this.last = codes_bytes[hash_frequency.get(hfel.character)].value+1;
-//        }
-//    }
 	private void buildCode(HuffmanElement2 hfel, String x) {
         if (!hfel.isLeaf()) {
             buildCode(hfel.left,  x +"0");
@@ -143,13 +123,6 @@ public class BiHuffman {
 //			        	Integer.parseInt(codes_bytes[hash_frequency.get(hfel.character)].value,2));
         }
     }
-//	private String findAlph(String z){
-//		for(int i=0; i<cds.length; i++){
-//			if(cds[i].zerone.equals(z)) return cds[i].charact;
-////			if(cds[i].zerone.length()>z.length()) return null;
-//		}
-//		return null;
-//	}
 	private String findAlph(String z){
 		for(codes cod : list_codes){
 			if(cod.zerone.equals(z)) return cod.charact;

@@ -8,7 +8,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import algorithm.Huffman;
-import algorithm.HuffmanElement;
 import algorithm.HuffmanElement2;
 
 public class HuffmanTest {

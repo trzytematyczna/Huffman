@@ -27,13 +27,11 @@ public class Huffman {
 	Pair[] codes_bytes;
 	int textlen;
 	static int codelen;
-//	codes[] cds;
 	Map<String, Integer> hash_frequency;
 	LinkedList<codes> list_codes;
 	HuffmanElement2 root;
 	int depth;
 	static BufferedOutputStream out;
-//	static BufferedOutputStream decoded;
 	static BufferedInputStream in; 
    	private static int buff;
    	private static int buff2;
@@ -41,7 +39,6 @@ public class Huffman {
 	private static int remaining_bits;
 	
 	public Huffman(String path) throws IOException {
-//		decoded = new BufferedOutputStream(new FileOutputStream("C:\\Users\\MZ\\Documents\\mra\\agh\\algo\\decoded2.txt"));
 		out = new BufferedOutputStream(new FileOutputStream("C:\\Users\\MZ\\Documents\\mra\\agh\\algo\\Huffman_binary_coded.txt"));
 		in = new BufferedInputStream(new FileInputStream("C:\\Users\\MZ\\Documents\\mra\\agh\\algo\\Huffman_binary_coded.txt"));
 		this.depth=0;
@@ -79,7 +76,6 @@ public class Huffman {
 	}
 
 	public void doHuff(String path, String out) throws IOException{
-//		cds = new codes[hash_frequency.size()];
 		codes_bytes = new Pair[hash_frequency.size()];
 		list_codes = new LinkedList<codes>();
 		makeHuffmanTree();
@@ -102,25 +98,7 @@ public class Huffman {
 		}
 	}
 	
-//	private void buildCode(HuffmanElement2 hfel, int x, int size) {
-//		int shifted = x<<1;
-//		int added = (2 *(shifted&1)+(shifted^1));
-//        if (!hfel.isLeaf()) {
-//    		size++;
-//        	this.depth++;
-//            buildCode(hfel.left,  shifted, size);
-//            buildCode(hfel.right, added, size);
-//        }
-//        else {
-////        	System.out.println(hash_frequency.get(hfel.character));
-//        	codes_bytes[hash_frequency.get(hfel.character)] = new Pair(x,Integer.toBinaryString(x).length());
-//        	
-//        	System.out.println(hfel.frequency+" "+hfel.character + " " + Integer.toBinaryString(x)+" "+Integer.toBinaryString(x).length()+" "+
-//        	codes_bytes[hash_frequency.get(hfel.character)].value +" "+codes_bytes[hash_frequency.get(hfel.character)].len);
-////        	System.out.println(size+" "+ this.depth);
-//        	this.last = codes_bytes[hash_frequency.get(hfel.character)].value+1;
-//        }
-//    }
+
 	private void buildCode(HuffmanElement2 hfel, String x) {
         if (!hfel.isLeaf()) {
             buildCode(hfel.left,  x +'0');
@@ -128,20 +106,12 @@ public class Huffman {
         }
         else {
         	codes_bytes[hash_frequency.get(hfel.character)] = new Pair(x,x.length());
-//        	cds[this.depth++] = new codes(hfel.character,x);
         	list_codes.add(new codes(hfel.character,x));
 //        	System.out.println(hfel.frequency+" "+hfel.character + " "+x.length()+"asd "+
 //			        	codes_bytes[hash_frequency.get(hfel.character)].value +" "+ 
 //			        	Integer.parseInt(codes_bytes[hash_frequency.get(hfel.character)].value,2));
         }
     }
-//	private String findAlph(String z){
-//		for(int i=0; i<cds.length; i++){
-//			if(cds[i].zerone.equals(z)) return cds[i].charact;
-////			if(cds[i].zerone.length()>z.length()) return null;
-//		}
-//		return null;
-//	}
 	private String findAlph(String z){
 		for(codes cod : list_codes){
 			if(cod.zerone.equals(z)) return cod.charact;
@@ -269,15 +239,6 @@ public class Huffman {
        	bw.close();
 
 	}
-//	public static void write(char x, int r) {
-//        if (r == 8) { write(x); return; }
-//        if (r < 1 || r > 16)        throw new IllegalArgumentException("Illegal value for r = " + r);
-//        if (x < 0 || x >= (1 << r)) throw new IllegalArgumentException("Illegal " + r + "-bit char = " + x);
-//        for (int i = 0; i < r; i++) {
-//            boolean bit = ((x >>> (r - i - 1)) & 1) == 1;
-//            writeBit(bit);
-//        }
-//    }
 	
 	private static boolean readBoolean(BufferedInputStream in) throws RuntimeException{
 		if (isEmpty()) throw new RuntimeException("Reading from empty input stream");

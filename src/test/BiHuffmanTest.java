@@ -9,7 +9,6 @@ import org.junit.Test;
 
 import algorithm.BiHuffman;
 import algorithm.Huffman;
-import algorithm.HuffmanElement;
 import algorithm.HuffmanElement2;
 
 public class BiHuffmanTest {
